@@ -1,0 +1,42 @@
+{
+  "name": "systeminfo-adapter",
+  "display_name": "Systeminfo",
+  "version": "0.1.0",
+  "description": "Get stats of the system",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tim-hellhake/systeminfo-adapter.git"
+  },
+  "author": "Tim Hellhake",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/tim-hellhake/systeminfo-adapter/issues"
+  },
+  "homepage": "https://github.com/tim-hellhake/systeminfo-adapter#readme",
+  "files": [
+    "LICENSE",
+    "SHA256SUMS",
+    "index.js",
+    "systeminfo-adapter.js"
+  ],
+  "moziot": {
+    "api": {
+      "min": 2,
+      "max": 2
+    },
+    "plugin": true,
+    "exec": "{nodeLoader} {path}"
+  },
+  "dependencies": {
+    "systeminformation": "^4.8.3"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.16.0"
+  }
+}
