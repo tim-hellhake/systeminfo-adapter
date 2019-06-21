@@ -28,6 +28,14 @@ class Systeminfo extends Device {
       description: 'Available memory',
       readOnly: true
     });
+
+    this.addProperty('cpu_temperature', {
+      type: 'number',
+      unit: '°C',
+      title: 'CPU temperature',
+      description: 'CPU temperature',
+      readOnly: true
+    });
   }
 
   addProperty(name, description) {
@@ -58,7 +66,12 @@ class Systeminfo extends Device {
       available
     } = await si.mem();
 
+    const {
+      main
+    } = await si.cpuTemperature();
+
     this.setProperty('mem_available', available / 1024 / 1024 / 1024);
+    this.setProperty('cpu_temperature', main);
   }
 }
 
