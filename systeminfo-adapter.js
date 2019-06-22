@@ -36,6 +36,14 @@ class Systeminfo extends Device {
       description: 'CPU temperature',
       readOnly: true
     });
+
+    this.addProperty('uptime', {
+      type: 'integer',
+      unit: 's',
+      title: 'Uptime',
+      description: 'Seconds since start of the system',
+      readOnly: true
+    });
   }
 
   addProperty(name, description) {
@@ -70,8 +78,13 @@ class Systeminfo extends Device {
       main
     } = await si.cpuTemperature();
 
+    const {
+      uptime
+    } = await si.time();
+
     this.setProperty('mem_available', available / 1024 / 1024 / 1024);
     this.setProperty('cpu_temperature', main);
+    this.setProperty('uptime', uptime);
   }
 }
 
