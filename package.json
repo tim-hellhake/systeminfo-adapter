@@ -22,7 +22,8 @@
     "LICENSE",
     "SHA256SUMS",
     "index.js",
-    "systeminfo-adapter.js"
+    "systeminfo-adapter.js",
+    "manifest.json"
   ],
   "moziot": {
     "api": {
