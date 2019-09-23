@@ -2,7 +2,7 @@
   "id": "systeminfo-adapter",
   "short_name": "Systeminfo",
   "name": "Systeminfo",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Get stats of the system",
   "author": "Tim Hellhake",
   "homepage_url": "https://github.com/tim-hellhake/systeminfo-adapter#readme",
