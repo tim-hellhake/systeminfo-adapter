@@ -6,7 +6,6 @@
 
 'use strict';
 
-const SysteminfoAdapter = require('./systeminfo-adapter');
+import { SysteminfoAdapter } from './systeminfo-adapter';
 
-module.exports =
-    (addonManager, manifest) => new SysteminfoAdapter(addonManager, manifest);
+export = (addonManager: any, manifest: any) => new SysteminfoAdapter(addonManager, manifest);

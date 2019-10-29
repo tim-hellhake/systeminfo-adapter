@@ -6,16 +6,12 @@
 
 'use strict';
 
-const si = require('systeminformation');
+import * as si from 'systeminformation';
 
-const {
-  Adapter,
-  Device,
-  Property
-} = require('gateway-addon');
+import { Adapter, Device, Property } from 'gateway-addon';
 
 class Systeminfo extends Device {
-  constructor(adapter, manifest) {
+  constructor(adapter: Adapter, manifest: any) {
     super(adapter, Systeminfo.name);
     this['@context'] = 'https://iot.mozilla.org/schemas/';
     this.name = manifest.display_name;
@@ -46,12 +42,12 @@ class Systeminfo extends Device {
     });
   }
 
-  addProperty(name, description) {
+  addProperty(name: string, description: any) {
     const property = new Property(this, name, description);
     this.properties.set(name, property);
   }
 
-  setProperty(name, value) {
+  setProperty(name: string, value: any) {
     const property = this.properties.get(name);
 
     if (property) {
@@ -62,9 +58,9 @@ class Systeminfo extends Device {
     }
   }
 
-  startPolling(interval) {
+  startPolling(interval: number) {
     this.poll();
-    this.timer = setInterval(() => {
+    setInterval(() => {
       this.poll();
     }, interval * 1000);
   }
@@ -88,8 +84,8 @@ class Systeminfo extends Device {
   }
 }
 
-class SysteminfoAdapter extends Adapter {
-  constructor(addonManager, manifest) {
+export class SysteminfoAdapter extends Adapter {
+  constructor(addonManager: any, manifest: any) {
     super(addonManager, SysteminfoAdapter.name, manifest.name);
     addonManager.addAdapter(this);
     const device = new Systeminfo(this, manifest);
@@ -97,5 +93,3 @@ class SysteminfoAdapter extends Adapter {
     device.startPolling(1);
   }
 }
-
-module.exports = SysteminfoAdapter;
