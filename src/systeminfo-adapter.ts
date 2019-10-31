@@ -63,12 +63,16 @@ class Cpu extends SystemDevice {
 class Ram extends SystemDevice {
   private memAvailable: Property;
 
-  constructor(adapter: Adapter) {
+  constructor(adapter: Adapter, total: number) {
     super(adapter, 'ram');
     this.name = 'RAM';
+    this['@type'] = ['MultiLevelSensor'];
 
     this.memAvailable = this.createProperty('memAvailable', {
+      '@type': 'LevelProperty',
       type: 'number',
+      min: 0,
+      max: this.toGb(total),
       unit: 'GB',
       title: 'Available memory',
       description: 'Available memory',
@@ -82,8 +86,12 @@ class Ram extends SystemDevice {
     } = await si.mem();
 
 
-    this.memAvailable.setCachedValue(available / 1024 / 1024 / 1024);
+    this.memAvailable.setCachedValue(this.toGb(available));
     this.notifyPropertyChanged(this.memAvailable);
+  }
+
+  private toGb(bytes: number) {
+    return bytes / 1024 / 1024 / 1024;
   }
 }
 
@@ -122,12 +130,20 @@ export class SysteminfoAdapter extends Adapter {
     this.handleDeviceAdded(cpu);
     cpu.startPolling(1);
 
-    const ram = new Ram(this);
-    this.handleDeviceAdded(ram);
-    ram.startPolling(1);
+    this.createRam();
 
     const system = new System(this);
     this.handleDeviceAdded(system);
     system.startPolling(1);
+  }
+
+  private async createRam() {
+    const {
+      total
+    } = await si.mem();
+
+    const ram = new Ram(this, total);
+    this.handleDeviceAdded(ram);
+    ram.startPolling(1);
   }
 }

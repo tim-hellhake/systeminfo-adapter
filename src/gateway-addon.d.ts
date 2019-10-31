@@ -14,6 +14,7 @@ declare module 'gateway-addon' {
         protected '@context': string;
         protected name: string;
         protected description: string;
+        protected '@type': string[];
 
         constructor(adapter: Adapter, id: string);
 
