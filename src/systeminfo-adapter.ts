@@ -44,7 +44,7 @@ class Cpu extends SystemDevice {
     this.cpuTemperature = this.createProperty('cpuTemperature', {
       type: 'number',
       '@type': 'TemperatureProperty',
-      unit: '°C',
+      unit: 'degree celsius',
       title: 'CPU temperature',
       description: 'CPU temperature',
       readOnly: true
