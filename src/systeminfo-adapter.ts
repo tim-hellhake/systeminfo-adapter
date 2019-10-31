@@ -39,9 +39,11 @@ class Cpu extends SystemDevice {
   constructor(adapter: Adapter) {
     super(adapter, 'cpu');
     this.name = 'CPU';
+    this['@type'] = ['TemperatureSensor'];
 
     this.cpuTemperature = this.createProperty('cpuTemperature', {
       type: 'number',
+      '@type': 'TemperatureProperty',
       unit: '°C',
       title: 'CPU temperature',
       description: 'CPU temperature',
