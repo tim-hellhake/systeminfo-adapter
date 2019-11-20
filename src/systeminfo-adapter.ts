@@ -74,8 +74,8 @@ class Ram extends SystemDevice {
       '@type': 'LevelProperty',
       type: 'number',
       min: 0,
-      max: this.toGb(total),
-      unit: 'GB',
+      max: this.toMb(total),
+      unit: 'MB',
       title: 'Available memory',
       description: 'Available memory',
       readOnly: true
@@ -88,12 +88,12 @@ class Ram extends SystemDevice {
     } = await si.mem();
 
 
-    this.memAvailable.setCachedValue(this.toGb(available));
+    this.memAvailable.setCachedValue(this.toMb(available));
     this.notifyPropertyChanged(this.memAvailable);
   }
 
-  private toGb(bytes: number) {
-    return bytes / 1024 / 1024 / 1024;
+  private toMb(bytes: number) {
+    return bytes / 1024.0 / 1024.0;
   }
 }
 
