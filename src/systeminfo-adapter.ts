@@ -103,9 +103,13 @@ class System extends SystemDevice {
   constructor(adapter: Adapter) {
     super(adapter, 'system');
     this.name = 'System';
+    this['@type'] = ['MultiLevelSensor'];
 
     this.uptime = this.createProperty('uptime', {
+      '@type': 'LevelProperty',
       type: 'integer',
+      min: 0,
+      max: 365 * 24 * 60 * 60,
       unit: 's',
       title: 'Uptime',
       description: 'Seconds since start of the system',
