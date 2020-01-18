@@ -97,6 +97,41 @@ class Ram extends SystemDevice {
   }
 }
 
+class Disk extends SystemDevice {
+  private memAvailable: Property;
+
+  constructor(adapter: Adapter, mount: string, size: number) {
+    super(adapter, mount);
+    this.name = mount;
+    this['@type'] = ['MultiLevelSensor'];
+
+    this.memAvailable = this.createProperty('memAvailable', {
+      '@type': 'LevelProperty',
+      type: 'number',
+      min: 0,
+      max: this.toGb(size),
+      unit: 'GB',
+      title: 'Available memory',
+      description: 'Available memory',
+      readOnly: true
+    });
+  }
+
+  update(fs: si.Systeminformation.FsSizeData) {
+    let {
+      used,
+      size
+    } = fs;
+
+    this.memAvailable.setCachedValue(this.toGb(size - used));
+    this.notifyPropertyChanged(this.memAvailable);
+  }
+
+  private toGb(bytes: number) {
+    return bytes / 1024.0 / 1024.0 / 1024.0;
+  }
+}
+
 class System extends SystemDevice {
   private uptime: Property;
 
@@ -128,6 +163,8 @@ class System extends SystemDevice {
 }
 
 export class SysteminfoAdapter extends Adapter {
+  private disks: { [key: string]: Disk } = {};
+
   constructor(addonManager: any, manifest: any) {
     super(addonManager, SysteminfoAdapter.name, manifest.name);
     addonManager.addAdapter(this);
@@ -137,6 +174,10 @@ export class SysteminfoAdapter extends Adapter {
     cpu.startPolling(1);
 
     this.createRam();
+
+    setInterval(() => {
+      this.updateFs();
+    }, 1000);
 
     const system = new System(this);
     this.handleDeviceAdded(system);
@@ -151,5 +192,27 @@ export class SysteminfoAdapter extends Adapter {
     const ram = new Ram(this, total);
     this.handleDeviceAdded(ram);
     ram.startPolling(1);
+  }
+
+  private async updateFs() {
+    const fsList = await si.fsSize();
+
+    for (let fs of fsList) {
+      let {
+        mount,
+        size
+      } = fs;
+
+      let disk = this.disks[mount];
+
+      if (!disk) {
+        console.log(`Creating disk for ${mount}`);
+        disk = new Disk(this, mount, size);
+        this.handleDeviceAdded(disk);
+        this.disks[mount] = disk;
+      }
+
+      disk.update(fs);
+    }
   }
 }
