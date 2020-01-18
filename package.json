@@ -35,10 +35,10 @@
     "exec": "{nodeLoader} {path}"
   },
   "dependencies": {
-    "systeminformation": "^4.14.17"
+    "systeminformation": "^4.19.1"
   },
   "devDependencies": {
-    "typescript": "^3.6.4",
-    "@types/node": "^12.12.5"
+    "typescript": "^3.7.5",
+    "@types/node": "^13.1.8"
   }
 }
