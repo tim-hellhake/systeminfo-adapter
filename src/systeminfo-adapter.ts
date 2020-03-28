@@ -9,6 +9,7 @@
 import * as si from 'systeminformation';
 
 import { Adapter, Device, Property } from 'gateway-addon';
+import { TimeUnit, convertSecondsToUnit, getUnit } from './time-scaling';
 
 class SystemDevice extends Device {
   constructor(adapter: Adapter, id: string) {
@@ -134,20 +135,27 @@ class Disk extends SystemDevice {
 
 class System extends SystemDevice {
   private uptime: Property;
+  private unit: TimeUnit = 's';
 
-  constructor(adapter: Adapter) {
+  constructor(private adapter: Adapter) {
     super(adapter, 'system');
     this.name = 'System';
     this['@type'] = ['MultiLevelSensor'];
+    this.uptime = this.createUptimeProperty(this.unit);
+  }
 
-    this.uptime = this.createProperty('uptime', {
+  private createUptimeProperty(unit: TimeUnit): Property {
+    const maxSeconds = 365 * 24 * 60 * 60;
+    const max = convertSecondsToUnit(maxSeconds, unit);
+
+    return this.createProperty('uptime', {
       '@type': 'LevelProperty',
       type: 'integer',
       min: 0,
-      max: 365 * 24 * 60 * 60,
-      unit: 's',
+      max,
+      unit,
       title: 'Uptime',
-      description: 'Seconds since start of the system',
+      description: 'Time since the start of the system',
       readOnly: true
     });
   }
@@ -157,7 +165,17 @@ class System extends SystemDevice {
       uptime
     } = await si.time();
 
-    this.uptime.setCachedValue(uptime);
+    const uptimeNumber = parseInt(uptime);
+    const nextUnit = getUnit(uptimeNumber);
+
+    if (this.unit != nextUnit) {
+      console.log(`Next unit is ${nextUnit}`);
+      this.unit = nextUnit;
+      this.uptime = this.createUptimeProperty(this.unit);
+      this.adapter.handleDeviceAdded(this);
+    }
+
+    this.uptime.setCachedValue(convertSecondsToUnit(uptimeNumber, this.unit));
     this.notifyPropertyChanged(this.uptime);
   }
 }
