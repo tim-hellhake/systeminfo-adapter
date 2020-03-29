@@ -135,28 +135,30 @@ class Disk extends SystemDevice {
 
 class System extends SystemDevice {
   private uptime: Property;
+  private scaledUptime: Property;
   private unit: TimeUnit = 's';
 
   constructor(private adapter: Adapter) {
     super(adapter, 'system');
     this.name = 'System';
     this['@type'] = ['MultiLevelSensor'];
-    this.uptime = this.createUptimeProperty(this.unit);
+    this.uptime = this.createUptimeProperty('uptime', this.unit);
+    this.scaledUptime = this.createUptimeProperty('scaledUptime', this.unit, { '@type': 'LevelProperty' });
   }
 
-  private createUptimeProperty(unit: TimeUnit): Property {
+  private createUptimeProperty(name: string, unit: TimeUnit, additionalProperties?: object): Property {
     const maxSeconds = 365 * 24 * 60 * 60;
     const max = convertSecondsToUnit(maxSeconds, unit);
 
-    return this.createProperty('uptime', {
-      '@type': 'LevelProperty',
+    return this.createProperty(name, {
       type: 'integer',
       min: 0,
       max,
       unit,
       title: 'Uptime',
       description: 'Time since the start of the system',
-      readOnly: true
+      readOnly: true,
+      ...additionalProperties
     });
   }
 
@@ -166,17 +168,21 @@ class System extends SystemDevice {
     } = await si.time();
 
     const uptimeNumber = parseInt(uptime);
+
+    this.uptime.setCachedValue(uptimeNumber);
+    this.notifyPropertyChanged(this.uptime);
+
     const nextUnit = getUnit(uptimeNumber);
 
     if (this.unit != nextUnit) {
       console.log(`Next unit is ${nextUnit}`);
       this.unit = nextUnit;
-      this.uptime = this.createUptimeProperty(this.unit);
+      this.scaledUptime = this.createUptimeProperty('scaledUptime', this.unit, { '@type': 'LevelProperty' });
       this.adapter.handleDeviceAdded(this);
     }
 
-    this.uptime.setCachedValue(convertSecondsToUnit(uptimeNumber, this.unit));
-    this.notifyPropertyChanged(this.uptime);
+    this.scaledUptime.setCachedValue(convertSecondsToUnit(uptimeNumber, this.unit));
+    this.notifyPropertyChanged(this.scaledUptime);
   }
 }
 
