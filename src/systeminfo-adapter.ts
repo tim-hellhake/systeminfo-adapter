@@ -133,6 +133,66 @@ class Disk extends SystemDevice {
   }
 }
 
+class Network extends SystemDevice {
+  private currentRxSpeed: Property;
+  private currentTxSpeed: Property;
+  private currentSpeed: Property;
+
+  constructor(adapter: Adapter, nic: string, mbits: number) {
+    super(adapter, nic);
+    this.name = nic;
+    this['@type'] = ['MultiLevelSensor'];
+
+    this.currentRxSpeed = this.createProperty('currentRxSpeed', {
+      type: 'number',
+      min: 0,
+      max: mbits,
+      unit: 'MBit/s',
+      title: 'Speed',
+      readOnly: true
+    });
+
+    this.currentTxSpeed = this.createProperty('currentTxSpeed', {
+      type: 'number',
+      min: 0,
+      max: mbits,
+      unit: 'MBit/s',
+      title: 'Speed',
+      readOnly: true
+    });
+
+    this.currentSpeed = this.createProperty('currentSpeed', {
+      '@type': 'LevelProperty',
+      type: 'number',
+      min: 0,
+      max: mbits,
+      unit: 'MBit/s',
+      title: 'Speed',
+      readOnly: true
+    });
+  }
+
+  updateStats(statsData: si.Systeminformation.NetworkStatsData) {
+    let {
+      rx_sec,
+      tx_sec
+    } = statsData;
+
+    this.currentRxSpeed.setCachedValue(this.toMbits(rx_sec));
+    this.notifyPropertyChanged(this.currentRxSpeed);
+
+    this.currentTxSpeed.setCachedValue(this.toMbits(tx_sec));
+    this.notifyPropertyChanged(this.currentTxSpeed);
+
+    this.currentSpeed.setCachedValue(this.toMbits(rx_sec + tx_sec));
+    this.notifyPropertyChanged(this.currentSpeed);
+  }
+
+  private toMbits(bytesPerSecond: number) {
+    return bytesPerSecond * 8 / 1024.0 / 1024.0;
+  }
+}
+
 class System extends SystemDevice {
   private uptime: Property;
   private scaledUptime: Property;
@@ -188,6 +248,7 @@ class System extends SystemDevice {
 
 export class SysteminfoAdapter extends Adapter {
   private disks: { [key: string]: Disk } = {};
+  private networks: { [key: string]: Network } = {};
 
   constructor(addonManager: any, manifest: any) {
     super(addonManager, SysteminfoAdapter.name, manifest.name);
@@ -201,6 +262,7 @@ export class SysteminfoAdapter extends Adapter {
 
     setInterval(() => {
       this.updateFs();
+      this.updateNetwork();
     }, 1000);
 
     const system = new System(this);
@@ -237,6 +299,40 @@ export class SysteminfoAdapter extends Adapter {
       }
 
       disk.update(fs);
+    }
+  }
+
+  private async updateNetwork() {
+    const nics = await si.networkInterfaces();
+
+    for (let nic of nics) {
+      let {
+        iface,
+        speed
+      } = nic;
+
+      let network = this.networks[iface];
+
+      if (!network) {
+        console.log(`Creating network for ${iface}`);
+        network = new Network(this, iface, speed);
+        this.handleDeviceAdded(network);
+        this.networks[iface] = network;
+      }
+    }
+
+    const nicStats = await si.networkStats();
+
+    for (let nicStat of nicStats) {
+      let {
+        iface
+      } = nicStat;
+
+      let network = this.networks[iface];
+
+      if (network) {
+        network.updateStats(nicStat);
+      }
     }
   }
 }
