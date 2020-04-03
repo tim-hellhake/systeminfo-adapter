@@ -134,6 +134,7 @@ class Disk extends SystemDevice {
 }
 
 class Network extends SystemDevice {
+  private up: Property;
   private currentRxSpeed: Property;
   private currentTxSpeed: Property;
   private currentSpeed: Property;
@@ -142,6 +143,12 @@ class Network extends SystemDevice {
     super(adapter, nic);
     this.name = nic;
     this['@type'] = ['MultiLevelSensor'];
+
+    this.up = this.createProperty('up', {
+      type: 'boolean',
+      title: 'Up',
+      readOnly: true
+    });
 
     this.currentRxSpeed = this.createProperty('currentRxSpeed', {
       type: 'number',
@@ -170,6 +177,15 @@ class Network extends SystemDevice {
       title: 'Speed',
       readOnly: true
     });
+  }
+
+  updateData(interfaceData: si.Systeminformation.NetworkInterfacesData) {
+    let {
+      operstate
+    } = interfaceData;
+
+    this.up.setCachedValue(operstate);
+    this.notifyPropertyChanged(this.up);
   }
 
   updateStats(statsData: si.Systeminformation.NetworkStatsData) {
@@ -318,6 +334,7 @@ export class SysteminfoAdapter extends Adapter {
         network = new Network(this, iface, speed);
         this.handleDeviceAdded(network);
         this.networks[iface] = network;
+        network.updateData(nic);
       }
     }
 
