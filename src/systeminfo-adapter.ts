@@ -155,7 +155,7 @@ class Network extends SystemDevice {
       min: 0,
       max: mbits,
       unit: 'MBit/s',
-      title: 'Speed',
+      title: 'RX speed',
       readOnly: true
     });
 
@@ -164,7 +164,7 @@ class Network extends SystemDevice {
       min: 0,
       max: mbits,
       unit: 'MBit/s',
-      title: 'Speed',
+      title: 'TX speed',
       readOnly: true
     });
 
@@ -174,7 +174,7 @@ class Network extends SystemDevice {
       min: 0,
       max: mbits,
       unit: 'MBit/s',
-      title: 'Speed',
+      title: 'Total speed',
       readOnly: true
     });
   }
