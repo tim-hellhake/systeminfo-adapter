@@ -39,7 +39,7 @@ class Cpu extends SystemDevice {
 
   constructor(adapter: Adapter) {
     super(adapter, 'cpu');
-    this.name = 'CPU';
+    this.name = 'Processor';
     this['@type'] = ['TemperatureSensor'];
 
     this.cpuTemperature = this.createProperty('cpuTemperature', {
@@ -68,7 +68,7 @@ class Ram extends SystemDevice {
 
   constructor(adapter: Adapter, total: number) {
     super(adapter, 'ram');
-    this.name = 'RAM';
+    this.name = 'memory';
     this['@type'] = ['MultiLevelSensor'];
 
     this.memAvailable = this.createProperty('memAvailable', {
