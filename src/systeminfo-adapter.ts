@@ -46,7 +46,7 @@ class Cpu extends SystemDevice {
       type: 'number',
       '@type': 'TemperatureProperty',
       unit: 'degree celsius',
-      title: 'CPU temperature',
+      title: 'temperature',
       description: 'CPU temperature',
       readOnly: true
     });
@@ -155,7 +155,7 @@ class Network extends SystemDevice {
       min: 0,
       max: mbits,
       unit: 'MBit/s',
-      title: 'Speed',
+      title: 'Receive speed',
       readOnly: true
     });
 
@@ -164,7 +164,7 @@ class Network extends SystemDevice {
       min: 0,
       max: mbits,
       unit: 'MBit/s',
-      title: 'Speed',
+      title: 'Transmit speed',
       readOnly: true
     });
 
@@ -174,7 +174,7 @@ class Network extends SystemDevice {
       min: 0,
       max: mbits,
       unit: 'MBit/s',
-      title: 'Speed',
+      title: 'Current speed',
       readOnly: true
     });
   }
