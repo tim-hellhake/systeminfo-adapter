@@ -233,11 +233,11 @@ class System extends SystemDevice {
     super(adapter, 'system');
     this.name = 'System';
     this['@type'] = ['MultiLevelSensor'];
-    this.uptime = this.createUptimeProperty('uptime', this.unit);
-    this.scaledUptime = this.createUptimeProperty('scaledUptime', this.unit, { '@type': 'LevelProperty' });
+    this.uptime = this.createUptimeProperty('uptime', this.unit, 'Uptime in seconds');
+    this.scaledUptime = this.createUptimeProperty('scaledUptime', this.unit, 'Uptime', { '@type': 'LevelProperty' });
   }
 
-  private createUptimeProperty(name: string, unit: TimeUnit, additionalProperties?: object): Property {
+  private createUptimeProperty(name: string, unit: TimeUnit, title: string, additionalProperties?: object): Property {
     const maxSeconds = 365 * 24 * 60 * 60;
     const max = convertSecondsToUnit(maxSeconds, unit);
 
@@ -246,7 +246,7 @@ class System extends SystemDevice {
       min: 0,
       max,
       unit,
-      title: 'Uptime',
+      title,
       description: 'Time since the start of the system',
       readOnly: true,
       ...additionalProperties
@@ -268,7 +268,7 @@ class System extends SystemDevice {
     if (this.unit != nextUnit) {
       console.log(`Next unit is ${nextUnit}`);
       this.unit = nextUnit;
-      this.scaledUptime = this.createUptimeProperty('scaledUptime', this.unit, { '@type': 'LevelProperty' });
+      this.scaledUptime = this.createUptimeProperty('scaledUptime', this.unit, 'Uptime', { '@type': 'LevelProperty' });
       this.adapter.handleDeviceAdded(this);
     }
 
