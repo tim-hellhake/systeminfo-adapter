@@ -36,6 +36,7 @@ class SystemDevice extends Device {
 
 class Cpu extends SystemDevice {
   private cpuTemperature: Property;
+  private cpuUsage: Property;
 
   constructor(adapter: Adapter) {
     super(adapter, 'cpu');
@@ -50,6 +51,14 @@ class Cpu extends SystemDevice {
       description: 'CPU temperature',
       readOnly: true
     });
+
+    this.cpuUsage = this.createProperty('cpuUsage', {
+      type: 'number',
+      unit: '%',
+      title: 'CPU usage',
+      description: 'CPU usage in percent',
+      readOnly: true
+    });
   }
 
   async poll() {
@@ -57,9 +66,15 @@ class Cpu extends SystemDevice {
       main
     } = await si.cpuTemperature();
 
+    const {
+      currentload
+    } = await si.currentLoad();
 
     this.cpuTemperature.setCachedValue(main);
     this.notifyPropertyChanged(this.cpuTemperature);
+
+    this.cpuUsage.setCachedValue(currentload);
+    this.notifyPropertyChanged(this.cpuUsage);
   }
 }
 
