@@ -28,14 +28,6 @@
     "lib/time-scaling.js",
     "manifest.json"
   ],
-  "moziot": {
-    "api": {
-      "min": 2,
-      "max": 2
-    },
-    "plugin": true,
-    "exec": "{nodeLoader} {path}"
-  },
   "dependencies": {
     "systeminformation": "^4.26.10"
   },
