@@ -37,6 +37,7 @@ class SystemDevice extends Device {
 class Cpu extends SystemDevice {
   private cpuTemperature: Property;
   private cpuUsage: Property;
+  private avgLoad: Property;
 
   constructor(adapter: Adapter) {
     super(adapter, 'cpu');
@@ -59,6 +60,13 @@ class Cpu extends SystemDevice {
       description: 'CPU usage in percent',
       readOnly: true
     });
+
+    this.avgLoad = this.createProperty('avgLoad', {
+      type: 'number',
+      title: 'Average load',
+      description: 'The average cpu load',
+      readOnly: true
+    });
   }
 
   async poll() {
@@ -67,6 +75,7 @@ class Cpu extends SystemDevice {
     } = await si.cpuTemperature();
 
     const {
+      avgload,
       currentload
     } = await si.currentLoad();
 
@@ -75,6 +84,9 @@ class Cpu extends SystemDevice {
 
     this.cpuUsage.setCachedValue(currentload);
     this.notifyPropertyChanged(this.cpuUsage);
+
+    this.avgLoad.setCachedValue(avgload);
+    this.notifyPropertyChanged(this.avgLoad);
   }
 }
 
