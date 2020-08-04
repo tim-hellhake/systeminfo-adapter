@@ -297,30 +297,36 @@ export class SysteminfoAdapter extends Adapter {
     super(addonManager, SysteminfoAdapter.name, manifest.name);
     addonManager.addAdapter(this);
 
+    const {
+      pollInterval
+    } = manifest.moziot.config;
+
+    const pollIntervalOrDefault = pollInterval || 1;
+
     const cpu = new Cpu(this);
     this.handleDeviceAdded(cpu);
-    cpu.startPolling(1);
+    cpu.startPolling(pollIntervalOrDefault);
 
-    this.createRam();
+    this.createRam(pollIntervalOrDefault);
 
     setInterval(() => {
       this.updateFs();
       this.updateNetwork();
-    }, 1000);
+    }, pollIntervalOrDefault);
 
     const system = new System(this);
     this.handleDeviceAdded(system);
-    system.startPolling(1);
+    system.startPolling(pollIntervalOrDefault);
   }
 
-  private async createRam() {
+  private async createRam(pollIntervalMillis: number) {
     const {
       total
     } = await si.mem();
 
     const ram = new Ram(this, total);
     this.handleDeviceAdded(ram);
-    ram.startPolling(1);
+    ram.startPolling(pollIntervalMillis);
   }
 
   private async updateFs() {

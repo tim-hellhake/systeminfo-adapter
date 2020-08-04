@@ -14,5 +14,20 @@
       "primary_type": "adapter",
       "strict_min_version": "0.10.0"
     }
+  },
+  "options": {
+    "default": {
+      "pollInterval": 1
+    },
+    "schema": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "pollInterval": {
+          "type": "integer",
+          "title": "The time in seconds after which the data is refreshed"
+        }
+      }
+    }
   }
 }
