@@ -312,7 +312,7 @@ export class SysteminfoAdapter extends Adapter {
     setInterval(() => {
       this.updateFs();
       this.updateNetwork();
-    }, pollIntervalOrDefault);
+    }, pollIntervalOrDefault * 1000);
 
     const system = new System(this);
     this.handleDeviceAdded(system);
