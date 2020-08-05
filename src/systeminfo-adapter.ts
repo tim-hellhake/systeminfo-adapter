@@ -320,14 +320,14 @@ export class SysteminfoAdapter extends Adapter {
     system.startPolling(pollIntervalOrDefault);
   }
 
-  private async createRam(pollIntervalMillis: number) {
+  private async createRam(pollIntervalSeconds: number) {
     const {
       total
     } = await si.mem();
 
     const ram = new Ram(this, total);
     this.handleDeviceAdded(ram);
-    ram.startPolling(pollIntervalMillis);
+    ram.startPolling(pollIntervalSeconds);
   }
 
   private async updateFs() {
