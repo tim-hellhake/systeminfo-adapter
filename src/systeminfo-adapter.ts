@@ -10,6 +10,7 @@ import * as si from 'systeminformation';
 
 import { Adapter, Device, Property } from 'gateway-addon';
 import { TimeUnit, convertSecondsToUnit, getUnit } from './time-scaling';
+import { Systeminformation } from 'systeminformation';
 
 class SystemDevice extends Device {
   constructor(adapter: Adapter, id: string) {
@@ -38,11 +39,28 @@ class Cpu extends SystemDevice {
   private cpuTemperature: Property;
   private cpuUsage: Property;
   private avgLoad: Property;
+  private currentSpeed: Property;
 
-  constructor(adapter: Adapter) {
+  constructor(adapter: Adapter, cpuData: Systeminformation.CpuData) {
     super(adapter, 'cpu');
     this.name = 'CPU';
     this['@type'] = ['TemperatureSensor'];
+
+    const {
+      speedmin,
+      speedmax
+    } = cpuData;
+
+    const additionalSpeedProperties: any = {};
+
+    try {
+      const min = parseFloat(speedmin);
+      const max = parseFloat(speedmax);
+      additionalSpeedProperties.min = min;
+      additionalSpeedProperties.max = max;
+    } catch (e) {
+      console.log(`Could not parse speed min/max: ${e}`);
+    }
 
     this.cpuTemperature = this.createProperty('cpuTemperature', {
       type: 'number',
@@ -67,6 +85,16 @@ class Cpu extends SystemDevice {
       description: 'The average cpu load',
       readOnly: true
     });
+
+    this.currentSpeed = this.createProperty('currentSpeed', {
+      type: 'number',
+      unit: 'GHz',
+      multipleOf: 0.01,
+      title: 'Current speed',
+      description: 'The frequency of the cpu',
+      readOnly: true,
+      ...additionalSpeedProperties
+    });
   }
 
   async poll() {
@@ -79,6 +107,10 @@ class Cpu extends SystemDevice {
       currentload
     } = await si.currentLoad();
 
+    const {
+      avg
+    } = await si.cpuCurrentspeed();
+
     this.cpuTemperature.setCachedValue(main);
     this.notifyPropertyChanged(this.cpuTemperature);
 
@@ -87,6 +119,9 @@ class Cpu extends SystemDevice {
 
     this.avgLoad.setCachedValue(avgload);
     this.notifyPropertyChanged(this.avgLoad);
+
+    this.currentSpeed.setCachedValue(avg);
+    this.notifyPropertyChanged(this.currentSpeed);
   }
 }
 
@@ -304,10 +339,7 @@ export class SysteminfoAdapter extends Adapter {
 
     const pollIntervalOrDefault = pollInterval || 1;
 
-    const cpu = new Cpu(this);
-    this.handleDeviceAdded(cpu);
-    cpu.startPolling(pollIntervalOrDefault);
-
+    this.createCpu(pollIntervalOrDefault);
     this.createRam(pollIntervalOrDefault);
 
     setInterval(() => {
@@ -318,6 +350,14 @@ export class SysteminfoAdapter extends Adapter {
     const system = new System(this);
     this.handleDeviceAdded(system);
     system.startPolling(pollIntervalOrDefault);
+  }
+
+  private async createCpu(pollIntervalSeconds: number) {
+    const cpuData = await si.cpu();
+
+    const cpu = new Cpu(this, cpuData);
+    this.handleDeviceAdded(cpu);
+    cpu.startPolling(pollIntervalSeconds);
   }
 
   private async createRam(pollIntervalSeconds: number) {
