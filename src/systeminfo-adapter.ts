@@ -200,6 +200,7 @@ class Network extends SystemDevice {
       type: 'number',
       min: 0,
       max: mbits,
+      multipleOf: 0.001,
       unit: 'MBit/s',
       title: 'Total speed',
       readOnly: true
