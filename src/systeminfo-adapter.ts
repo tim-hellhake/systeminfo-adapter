@@ -200,6 +200,9 @@ class Network extends SystemDevice {
   private currentRxSpeed: Property;
   private currentTxSpeed: Property;
   private currentSpeed: Property;
+  private currentRxBytes: Property;
+  private currentTxBytes: Property;
+  private currentTotalBytes: Property;
 
   constructor(adapter: Adapter, nic: string, mbits: number) {
     super(adapter, nic);
@@ -240,6 +243,27 @@ class Network extends SystemDevice {
       title: 'Total speed',
       readOnly: true
     });
+
+    this.currentRxBytes = this.createProperty('currentRxBytes', {
+      type: 'number',
+      unit: 'GByte',
+      title: 'RX traffic',
+      readOnly: true
+    });
+
+    this.currentTxBytes = this.createProperty('currentTxBytes', {
+      type: 'number',
+      unit: 'GByte',
+      title: 'TX traffic',
+      readOnly: true
+    });
+
+    this.currentTotalBytes = this.createProperty('currentTotalBytes', {
+      type: 'number',
+      unit: 'GByte',
+      title: 'Total traffic',
+      readOnly: true
+    });
   }
 
   updateData(interfaceData: si.Systeminformation.NetworkInterfacesData) {
@@ -254,7 +278,9 @@ class Network extends SystemDevice {
   updateStats(statsData: si.Systeminformation.NetworkStatsData) {
     let {
       rx_sec,
-      tx_sec
+      tx_sec,
+      rx_bytes,
+      tx_bytes
     } = statsData;
 
     this.currentRxSpeed.setCachedValue(this.toMbits(rx_sec));
@@ -265,10 +291,23 @@ class Network extends SystemDevice {
 
     this.currentSpeed.setCachedValue(this.toMbits(rx_sec + tx_sec));
     this.notifyPropertyChanged(this.currentSpeed);
+
+    this.currentRxBytes.setCachedValue(this.toGByte(rx_bytes));
+    this.notifyPropertyChanged(this.currentRxBytes);
+
+    this.currentTxBytes.setCachedValue(this.toGByte(tx_bytes));
+    this.notifyPropertyChanged(this.currentTxBytes);
+
+    this.currentTotalBytes.setCachedValue(this.toGByte(rx_bytes + tx_bytes));
+    this.notifyPropertyChanged(this.currentTotalBytes);
   }
 
   private toMbits(bytesPerSecond: number) {
     return bytesPerSecond * 8 / 1024.0 / 1024.0;
+  }
+
+  private toGByte(bytes: number) {
+    return bytes / 1024.0 / 1024.0 / 1024.0;
   }
 }
 
