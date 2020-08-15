@@ -165,7 +165,7 @@ class Disk extends SystemDevice {
 
   constructor(adapter: Adapter, mount: string, size: number) {
     super(adapter, mount);
-    this.name = mount;
+    this.name = `Disk ${mount}`;
     this['@type'] = ['MultiLevelSensor'];
 
     this.memAvailable = this.createProperty('memAvailable', {
@@ -206,7 +206,7 @@ class Network extends SystemDevice {
 
   constructor(adapter: Adapter, nic: string, mbits: number) {
     super(adapter, nic);
-    this.name = nic;
+    this.name = `Network ${nic}`;
     this['@type'] = ['MultiLevelSensor'];
 
     this.up = this.createProperty('up', {
