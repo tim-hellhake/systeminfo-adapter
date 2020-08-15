@@ -66,23 +66,23 @@ class Cpu extends SystemDevice {
       type: 'number',
       '@type': 'TemperatureProperty',
       unit: 'degree celsius',
-      title: 'CPU temperature',
-      description: 'CPU temperature',
+      title: 'Temperature',
+      description: 'Temperature',
       readOnly: true
     });
 
     this.cpuUsage = this.createProperty('cpuUsage', {
       type: 'number',
       unit: '%',
-      title: 'CPU usage',
-      description: 'CPU usage in percent',
+      title: 'Usage',
+      description: 'Usage in percent',
       readOnly: true
     });
 
     this.avgLoad = this.createProperty('avgLoad', {
       type: 'number',
       title: 'Average load',
-      description: 'The average cpu load',
+      description: 'The average load',
       readOnly: true
     });
 
@@ -91,7 +91,7 @@ class Cpu extends SystemDevice {
       unit: 'GHz',
       multipleOf: 0.01,
       title: 'Current speed',
-      description: 'The frequency of the cpu',
+      description: 'The current clock speed',
       readOnly: true,
       ...additionalSpeedProperties
     });
@@ -139,8 +139,8 @@ class Ram extends SystemDevice {
       min: 0,
       max: this.toMb(total),
       unit: 'MB',
-      title: 'Available memory',
-      description: 'Available memory',
+      title: 'Available',
+      description: 'Available',
       readOnly: true
     });
   }
@@ -174,8 +174,8 @@ class Disk extends SystemDevice {
       min: 0,
       max: this.toGb(size),
       unit: 'GB',
-      title: 'Available memory',
-      description: 'Available memory',
+      title: 'Available',
+      description: 'Available',
       readOnly: true
     });
   }
