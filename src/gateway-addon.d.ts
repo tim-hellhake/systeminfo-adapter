@@ -6,6 +6,8 @@
 
 declare module 'gateway-addon' {
     class Property {
+        public max: number;
+
         constructor(device: Device, name: string, propertyDescr: {});
         public setCachedValue(value: any): void;
     }

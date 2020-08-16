@@ -268,9 +268,13 @@ class Network extends SystemDevice {
 
   updateData(interfaceData: si.Systeminformation.NetworkInterfacesData) {
     let {
-      operstate
+      operstate,
+      speed
     } = interfaceData;
 
+    this.currentRxSpeed.max = speed;
+    this.currentTxSpeed.max = speed;
+    this.currentSpeed.max = speed;
     this.up.setCachedValue(operstate);
     this.notifyPropertyChanged(this.up);
   }
