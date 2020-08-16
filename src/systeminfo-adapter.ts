@@ -215,10 +215,12 @@ class Network extends SystemDevice {
       readOnly: true
     });
 
+    const maximumSpeed = mbits > 0 ? mbits : 1000;
+
     this.currentRxSpeed = this.createProperty('currentRxSpeed', {
       type: 'number',
       min: 0,
-      max: mbits,
+      max: maximumSpeed,
       unit: 'MBit/s',
       title: 'RX speed',
       readOnly: true
@@ -227,7 +229,7 @@ class Network extends SystemDevice {
     this.currentTxSpeed = this.createProperty('currentTxSpeed', {
       type: 'number',
       min: 0,
-      max: mbits,
+      max: maximumSpeed,
       unit: 'MBit/s',
       title: 'TX speed',
       readOnly: true
@@ -237,7 +239,7 @@ class Network extends SystemDevice {
       '@type': 'LevelProperty',
       type: 'number',
       min: 0,
-      max: mbits,
+      max: maximumSpeed,
       multipleOf: 0.001,
       unit: 'MBit/s',
       title: 'Total speed',
@@ -272,9 +274,12 @@ class Network extends SystemDevice {
       speed
     } = interfaceData;
 
-    this.currentRxSpeed.max = speed;
-    this.currentTxSpeed.max = speed;
-    this.currentSpeed.max = speed;
+    const maximumSpeed = speed > 0 ? speed : 1000;
+
+    this.currentRxSpeed.max = maximumSpeed;
+    this.currentTxSpeed.max = maximumSpeed;
+    this.currentSpeed.max = maximumSpeed;
+
     this.up.setCachedValue(operstate);
     this.notifyPropertyChanged(this.up);
   }
