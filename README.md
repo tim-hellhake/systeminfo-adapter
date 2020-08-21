@@ -1,6 +1,6 @@
 # Systeminfo Adapter
 
-[![Build Status](https://travis-ci.org/tim-hellhake/systeminfo-adapter.svg?branch=master)](https://travis-ci.org/tim-hellhake/systeminfo-adapter)
+[![Build Status](https://github.com/tim-hellhake/systeminfo-adapter/workflows/Build/badge.svg)](https://github.com/tim-hellhake/systeminfo-adapter/actions?query=workflow%3ABuild)
 [![dependencies](https://david-dm.org/tim-hellhake/systeminfo-adapter.svg)](https://david-dm.org/tim-hellhake/systeminfo-adapter)
 [![devDependencies](https://david-dm.org/tim-hellhake/systeminfo-adapter/dev-status.svg)](https://david-dm.org/tim-hellhake/systeminfo-adapter?type=dev)
 [![optionalDependencies](https://david-dm.org/tim-hellhake/systeminfo-adapter/optional-status.svg)](https://david-dm.org/tim-hellhake/systeminfo-adapter?type=optional)
