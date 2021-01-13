@@ -13,20 +13,15 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@master
-    - name: Set env
-      run: echo ::set-env name=RELEASE_VERSION::$(echo ${GITHUB_REF:10})
-    - name: Build project
+    - name: Set release version
+      run: echo "RELEASE_VERSION=${GITHUB_REF:10}" >> $GITHUB_ENV
+    - name: Install
       run: |
         npm ci
-        npm run build
-      env:
-        CI: true
-    - name: Run tests
+    - name: Build
       run: |
-        npm test
-      env:
-        CI: true
-    - name: Package project
+        npm run build
+    - name: Package
       run: |
         ./package.sh
     - name: Create Release
