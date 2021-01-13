@@ -1,7 +1,7 @@
 {
   "name": "systeminfo-adapter",
   "display_name": "Systeminfo",
-  "version": "1.10.1",
+  "version": "1.10.2",
   "description": "Get stats of the system",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
