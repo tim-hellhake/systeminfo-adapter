@@ -373,6 +373,36 @@ class System extends SystemDevice {
   }
 }
 
+class Battery extends SystemDevice {
+  private battery: Property;
+
+  constructor(adapter: Adapter) {
+    super(adapter, 'battery');
+    this.name = 'Battery';
+    this['@type'] = ['MultiLevelSensor'];
+
+    this.battery = this.createProperty('battery', {
+      '@type': 'LevelProperty',
+      type: 'number',
+      min: 0,
+      max: 100,
+      unit: '%',
+      title: 'Battery',
+      readOnly: true
+    });
+  }
+
+  async poll() {
+    const {
+      percent
+    } = await si.battery();
+
+
+    this.battery.setCachedValue(percent);
+    this.notifyPropertyChanged(this.battery);
+  }
+}
+
 export class SysteminfoAdapter extends Adapter {
   private disks: { [key: string]: Disk } = {};
   private networks: { [key: string]: Network } = {};
@@ -398,6 +428,11 @@ export class SysteminfoAdapter extends Adapter {
     const system = new System(this);
     this.handleDeviceAdded(system);
     system.startPolling(pollIntervalOrDefault);
+
+
+    const battery = new Battery(this);
+    this.handleDeviceAdded(battery);
+    battery.startPolling(pollIntervalOrDefault);
   }
 
   private async createCpu(pollIntervalSeconds: number) {
