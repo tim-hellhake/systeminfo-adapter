@@ -17,7 +17,15 @@
   },
   "options": {
     "default": {
-      "pollInterval": 1
+      "pollInterval": 1,
+      "features": {
+        "cpu": true,
+        "ram": true,
+        "disk": true,
+        "network": true,
+        "system": true,
+        "battery": true
+      }
     },
     "schema": {
       "type": "object",
@@ -26,6 +34,36 @@
         "pollInterval": {
           "type": "integer",
           "title": "The time in seconds after which the data is refreshed"
+        },
+        "features": {
+          "type": "object",
+          "title": "Features",
+          "properties": {
+            "cpu": {
+              "type": "boolean",
+              "title": "Enable the cpu metrics"
+            },
+            "ram": {
+              "type": "boolean",
+              "title": "Enable the ram metrics"
+            },
+            "disk": {
+              "type": "boolean",
+              "title": "Enable the disk metrics"
+            },
+            "network": {
+              "type": "boolean",
+              "title": "Enable the network metrics"
+            },
+            "system": {
+              "type": "boolean",
+              "title": "Enable the uptime metric"
+            },
+            "battery": {
+              "type": "boolean",
+              "title": "Enable the battery metrics"
+            }
+          }
         }
       }
     }

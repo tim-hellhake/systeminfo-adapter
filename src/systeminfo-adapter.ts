@@ -412,27 +412,50 @@ export class SysteminfoAdapter extends Adapter {
     addonManager.addAdapter(this);
 
     const {
-      pollInterval
+      pollInterval,
+      features
     } = manifest.moziot.config;
+
+    const {
+      cpu,
+      ram,
+      disk,
+      network,
+      system,
+      battery
+    } = features;
 
     const pollIntervalOrDefault = pollInterval || 1;
 
-    this.createCpu(pollIntervalOrDefault);
-    this.createRam(pollIntervalOrDefault);
+    if (cpu) {
+      this.createCpu(pollIntervalOrDefault);
+    }
+
+    if (ram) {
+      this.createRam(pollIntervalOrDefault);
+    }
 
     setInterval(() => {
-      this.updateFs();
-      this.updateNetwork();
+      if (disk) {
+        this.updateFs();
+      }
+
+      if (network) {
+        this.updateNetwork();
+      }
     }, pollIntervalOrDefault * 1000);
 
-    const system = new System(this);
-    this.handleDeviceAdded(system);
-    system.startPolling(pollIntervalOrDefault);
+    if (system) {
+      const systemDevice = new System(this);
+      this.handleDeviceAdded(systemDevice);
+      systemDevice.startPolling(pollIntervalOrDefault);
+    }
 
-
-    const battery = new Battery(this);
-    this.handleDeviceAdded(battery);
-    battery.startPolling(pollIntervalOrDefault);
+    if (battery) {
+      const batteryDevice = new Battery(this);
+      this.handleDeviceAdded(batteryDevice);
+      batteryDevice.startPolling(pollIntervalOrDefault);
+    }
   }
 
   private async createCpu(pollIntervalSeconds: number) {
