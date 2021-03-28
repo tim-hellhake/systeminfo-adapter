@@ -56,8 +56,14 @@ class Cpu extends SystemDevice {
     try {
       const min = parseFloat(speedmin);
       const max = parseFloat(speedmax);
-      additionalSpeedProperties.min = min;
-      additionalSpeedProperties.max = max;
+
+      if(typeof min === 'number') {
+        additionalSpeedProperties.min = min;
+      }
+
+      if(typeof max === 'number') {
+        additionalSpeedProperties.max = max;
+      }
     } catch (e) {
       console.log(`Could not parse speed min/max: ${e}`);
     }
