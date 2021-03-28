@@ -47,25 +47,18 @@ class Cpu extends SystemDevice {
     this['@type'] = ['TemperatureSensor'];
 
     const {
-      speedmin,
-      speedmax
+      speedMin,
+      speedMax
     } = cpuData;
 
     const additionalSpeedProperties: any = {};
 
-    try {
-      const min = parseFloat(speedmin);
-      const max = parseFloat(speedmax);
+    if (typeof speedMin === 'number') {
+      additionalSpeedProperties.min = speedMin;
+    }
 
-      if(typeof min === 'number') {
-        additionalSpeedProperties.min = min;
-      }
-
-      if(typeof max === 'number') {
-        additionalSpeedProperties.max = max;
-      }
-    } catch (e) {
-      console.log(`Could not parse speed min/max: ${e}`);
+    if (typeof speedMax === 'number') {
+      additionalSpeedProperties.max = speedMax;
     }
 
     this.cpuTemperature = this.createProperty('cpuTemperature', {
@@ -109,21 +102,21 @@ class Cpu extends SystemDevice {
     } = await si.cpuTemperature();
 
     const {
-      avgload,
-      currentload
+      avgLoad,
+      currentLoad
     } = await si.currentLoad();
 
     const {
       avg
-    } = await si.cpuCurrentspeed();
+    } = await si.cpuCurrentSpeed();
 
     this.cpuTemperature.setCachedValue(main);
     this.notifyPropertyChanged(this.cpuTemperature);
 
-    this.cpuUsage.setCachedValue(currentload);
+    this.cpuUsage.setCachedValue(currentLoad);
     this.notifyPropertyChanged(this.cpuUsage);
 
-    this.avgLoad.setCachedValue(avgload);
+    this.avgLoad.setCachedValue(avgLoad);
     this.notifyPropertyChanged(this.avgLoad);
 
     this.currentSpeed.setCachedValue(avg);
