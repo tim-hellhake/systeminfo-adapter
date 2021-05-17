@@ -202,8 +202,11 @@ class Network extends SystemDevice {
   private currentRxBytes: Property;
   private currentTxBytes: Property;
   private currentTotalBytes: Property;
+  private ssid?: Property;
+  private channel?: Property;
+  private signalLevel?: Property;
 
-  constructor(adapter: Adapter, nic: string, mbits: number) {
+  constructor(adapter: Adapter, nic: string, mbits: number, isWifi: boolean) {
     super(adapter, nic);
     this.name = `Network ${nic}`;
     this['@type'] = ['MultiLevelSensor'];
@@ -265,6 +268,26 @@ class Network extends SystemDevice {
       title: 'Total traffic',
       readOnly: true
     });
+
+    if(isWifi) {
+      this.ssid = this.createProperty('ssid', {
+        type: 'string',
+        title: 'SSID',
+        readOnly: true
+      });
+
+      this.channel = this.createProperty('channel', {
+        type: 'integer',
+        title: 'Channel',
+        readOnly: true
+      });
+
+      this.signalLevel = this.createProperty('signalLevel', {
+        type: 'integer',
+        title: 'Signal level',
+        readOnly: true
+      });
+    }
   }
 
   updateData(interfaceData: si.Systeminformation.NetworkInterfacesData) {
@@ -316,6 +339,29 @@ class Network extends SystemDevice {
 
   private toGByte(bytes: number) {
     return bytes / 1024.0 / 1024.0 / 1024.0;
+  }
+
+  updateWifi(wifi: Systeminformation.WifiConnectionData) {
+    let {
+      ssid,
+      channel,
+      signalLevel
+    } = wifi;
+
+    if(this.ssid) {
+      this.ssid.setCachedValue(ssid);
+      this.notifyPropertyChanged(this.ssid);
+    }
+
+    if(this.channel) {
+      this.channel.setCachedValue(channel);
+      this.notifyPropertyChanged(this.channel);
+    }
+
+    if(this.signalLevel) {
+      this.signalLevel.setCachedValue(signalLevel);
+      this.notifyPropertyChanged(this.signalLevel);
+    }
   }
 }
 
@@ -499,6 +545,18 @@ export class SysteminfoAdapter extends Adapter {
 
   private async updateNetwork() {
     const nics = await si.networkInterfaces();
+    const wifis = await si.wifiConnections();
+    const wifiByIf: Record<string, Systeminformation.WifiConnectionData> = {};
+
+    for(const wifi of wifis) {
+      const {
+        iface
+      } = wifi;
+
+      wifiByIf[iface] = wifi;
+    }
+
+    console.log(JSON.stringify(wifiByIf));
 
     for (let nic of nics) {
       let {
@@ -506,14 +564,19 @@ export class SysteminfoAdapter extends Adapter {
         speed
       } = nic;
 
+      const wifi = wifiByIf[iface];
       let network = this.networks[iface];
 
       if (!network) {
         console.log(`Creating network for ${iface}`);
-        network = new Network(this, iface, speed);
+        network = new Network(this, iface, speed, !!wifi);
         this.handleDeviceAdded(network);
         this.networks[iface] = network;
         network.updateData(nic);
+      }
+
+      if(wifi) {
+        network.updateWifi(wifi);
       }
     }
 
