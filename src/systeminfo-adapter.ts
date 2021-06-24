@@ -11,6 +11,7 @@ import * as si from 'systeminformation';
 import { Adapter, Device, Property } from 'gateway-addon';
 import { TimeUnit, convertSecondsToUnit, getUnit } from './time-scaling';
 import { Systeminformation } from 'systeminformation';
+import { Config } from './config';
 
 class SystemDevice extends Device {
   constructor(adapter: Adapter, id: string) {
@@ -459,7 +460,7 @@ export class SysteminfoAdapter extends Adapter {
     const {
       pollInterval,
       features
-    } = manifest.moziot.config;
+    } = manifest.moziot.config as Config;
 
     const {
       cpu,
@@ -468,7 +469,7 @@ export class SysteminfoAdapter extends Adapter {
       network,
       system,
       battery
-    } = features;
+    } = features ?? {};
 
     const pollIntervalOrDefault = pollInterval || 1;
 
